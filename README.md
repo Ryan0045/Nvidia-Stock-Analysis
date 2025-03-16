@@ -1,6 +1,6 @@
 # Nvidia-Stock-Analysis
 ## Project Overview
-This project analyzes NVIDIA stock prices using **linear regression** and **time series forecasting**. The goal is to understand the relationship between time and stock prices and to forecast future prices.
+This project analyses NVIDIA stock prices using **linear regression** and **time series forecasting**. The goal is to understand the relationship between time and stock prices and to forecast future prices.
 
 ## Files
 - `Nvidia_Analysis.Rmd`: R Markdown file containing the analysis.
