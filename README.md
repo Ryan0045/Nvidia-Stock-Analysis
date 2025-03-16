@@ -4,7 +4,7 @@ This project analyzes NVIDIA stock prices using **linear regression** and **time
 
 ## Files
 - `Nvidia_Analysis.Rmd`: R Markdown file containing the analysis.
-- - `Nvidia_Analysis.html`:html file containing the analysis.
+-  `Nvidia_Analysis.html`:html file containing the analysis.
 - `NVIDIA Corporation Common Stock.csv`: Dataset used for the analysis.
 - `images/`: Folder containing diagnostic plots and visualizations.
 
