@@ -1,0 +1,126 @@
+---
+title: "MTH6139 Time Series" 
+subtitle: "Coursework 1 -- NVIDIA Stock Price Analysis" 
+author: "Ryan Kakkar" 
+date: "Spring term 2025" 
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab 
+    highlight: tango
+---
+ 
+```{r, echo=FALSE}
+# This code will display the QMUL logo at the top right of the page
+# Do not change this code
+htmltools::img(src = knitr::image_uri("images/QMlogo.png"),
+               alt = 'logo',
+               style = 'position:absolute; top:0; right:0; padding:10px; width:20%;')
+```
+
+# Section 1: NVIDIA Stock Forecasting with Prophet
+This report uses the **Prophet model** and **linear regression** to analyse the time series data of **NVIDIA Corporation's stock prices**. The goal is to **forecast future stock prices** and assess **the linear trend** in the data.I was motivated to chose this data for this project  because NVIDIA is a leading company in the **technology sector**, with its stock performance closely tied to trends in **gaming**, **AI** and **autonomous vehicles**. The stock has shown significant **volatility** and **growth trends** over the years, making it a compelling dataset for **time series analysis** and **forecasting**.Analysing NVIDIA stock prices has **real-world applications for investors and financial analysts**, and it allows for the exploration of both **financial modelling techniques and the impact of technological advancements** on stock prices. Finally, the dataset presents a challenging yet **educational** opportunity to explore advanced modelling techniques, such as non-linear regression and time series forecasting.
+
+> <font size="5">💡</font> **Tip**
+> 
+> 1. You can rename the files in the project to something like `TimeSeriesWeek1.R` and `TimeSeriesWeek1.Rmd` and keep them in the `TimeSeriesWork` project folder.
+> Or
+> 2. You can also rename the folder to `TimeSeriesWeek1` and the project file to 
+`TimeSeriesWeek1.Rproj` and keep one folder for each week
+>
+> <font size="5">⚠️</font> **Warning** Do not use spaces in file names or folder names. They migh not cause problems today, but will some time in the future.
+
+## 1.1 Loading Required Libraries
+```{r}
+library(prophet)
+```
+
+## 1.2 Data Loading in R
+First, we downloaded the **historical NVIDIA share price** dataset for the past **five** years from **NASDAQ** in the form of a CSV file and then uploaded this dataset into R. To ensure that all data points were loaded correctly, we used the **head**` and `**tail**` functions, which display the first and last six entries of the dataset.Then we use this data for **Prophet** by creating **dataframe**  that consists of the **date** and the **closing stock price** of NVIDIA.
+```{r}
+#Loading dataset the from a csv file
+Nvidia_Stock_Price<-read.csv("NVIDIA Corporation Common Stock.csv")
+#Checking dataset using head and tail function which confirms all data has been imported in r.
+head(Nvidia_Stock_Price)
+tail(Nvidia_Stock_Price)
+# Preparing the Data for Prophet by creating the data frame for Prophet model
+Nvidia_df<-data.frame(
+    ds=as.Date(Nvidia_Stock_Price$Date, format ="%d/%m/%Y"),
+    y=Nvidia_Stock_Price$Close.Last)
+```
+
+
+## 1.3 Model fitting and Forecasting
+We will fit the **Prophet model** using the dataframe we created and generate forecasts for NVIDIA future stock prices.
+
+```{r }
+#Fitting the data frame into prophet model
+m<-prophet::prophet(Nvidia_df)
+### Creating future dates for forecasting 
+f<-prophet::make_future_dataframe(m,periods =2,freq = "year")
+### Making prediction by using forecasting 
+p=predict(m,f)
+```
+
+## 1.4 Visualization and Analysis
+we visualize the forecast and distribution of stock prices. The **forecast plot** below illustrates the **predicted NVIDIA stock price** for the next **two** years. The plot indicates that there will be **significant increases** in the stock price, as future prices are projected to **slope upwards**.
+```{r }
+#Plotting the forecast
+plot(m,p,xaxis="Years",yaxis="Stock Price",main = "NVIDIA Stock Price Forecast")
+```
+
+## 1.5 Hitogram of Stock Prices
+**Histogram** of stock prices as it gives us **indication of stock prices** over the period of time.we can see from the following plot that histogram is **not normally distributed**.This suggests that the dependent variable (stock prices) may be **skewed**or have a **non-normal distribution**.
+```{r }
+#Plotting the histogram of Stock Prices
+hist(Nvidia_df$y,xlab = "NVIDIA Stock Price",ylab = "Frequency",main = "Histogram of NVIDIA Stock Prices",breaks=20,col="blue")
+```
+  
+# Section 2: Linear Regression Analysis and Conclusion
+In this section, we analyse the growth **trend** in NVIDIA stock prices using **linear regression** and draw conclusions from the analysis by using different **plots**.
+
+## 2.1 Linear Regression Analysis
+We fit a **linear regression model**to analyse the trend in stock prices over time.
+```{r }
+#Add a numeric value to time variable
+Nvidia_df$time <- as.numeric(Nvidia_df$ds - min(Nvidia_df$ds))
+#Fitting a linear regression model
+linear_model <- lm(y ~ time, data = Nvidia_df)
+summary(linear_model)
+```
+
+## 2.2 Linear Trend Plot
+We will **plot** the time series overlaid with the **fitted curves** to illustrate the relationship between **years** (x-axis) and **NVIDIA stock prices** (y-axis). The **red line** represents the **fitted values** from the linear regression model. Since the red line does not follow the trend of the data points, this indicates that the relationship between years and stock prices is **not linear**.
+```{r }
+#Plot Stock prices VS time(Years)
+plot(Nvidia_df$time,Nvidia_df$y,type = "p",xlab = "Years ",ylab = "NVIDIA Stock Price",main = "NVIDIA Stock Price Over Time")
+# Overlay the fitted values from the linear regression model
+lines(Nvidia_df$time,fitted(linear_model),col="red")
+```
+
+## 2.3 Fitted Values VS Standardized Residuals Plot
+We will create a **plot** of the **fitted values (x-axis) against the standardized residuals** (y-axis). This plot helps to check for **homoscedasticity** and to identify **outliers**. In this plot, the **residuals** exhibit a **non-linear** pattern, starting positive, dropping to -2, rising to 2, and then falling back to 0. This indicates that the linear regression model is not fully capturing the relationship between the predictors and the response variable.
+
+```{r }
+plot(fitted(linear_model),rstandard(linear_model),xlab="Fitted Values",ylab="Standardized Residuals",main="Fitted Values VS Standardized Residuals")
+abline(0,0,lty=2)
+```
+
+## 2.4 Normal Q-Q Plot
+The **Normal Q-Q Plot** checks if the residuals are normally distributed.As most of the points fall along **red q-qline**,the residuals are **normally distributed**.
+```{r}
+# Normal QQ Plot
+qqnorm(residuals(linear_model), main = "Normal QQ Plot")
+qqline(residuals(linear_model), col = "red")
+```
+
+# Section 3: Conclusion and recommendations
+The aim of this project was to delve into how **time** relates to **NVIDIA's stock prices**, using **linear regression** as our primary **analytical tool**, and to also make predictions about future price movements. Upon examining the results, we found that while our **linear regression model** met the assumption of **normally distributed residuals** (as shown by the QQ Norm Plot), the **Fitted Values versus Standardized Residuals Plot** presented a different story. This plot showed a noticeable **non-linear** pattern in the residuals, hinting that our model isn’t capturing the relationship between **time**and **stock prices** as effectively as we hoped.
+
+This **non-linearity** might be because of variety of factors such as **market volatility**, **broader economic conditions**, or **even seasonal trends** that our linear model didn't take into account. While the linear regression model is **statistically sound** for hypothesis testing, it falls short when it comes to making **precise predictions** because of this **misspecification**.
+
+To enhance our analysis, we should consider exploring *non-linear regression methods* or maybe even *time series models* that could handle the *non-linearity* more effectively. Furthermore, looking into external elements like *market indices* or *economic indicators* could significantly boost the accuracy of our predictions.
+
+
+
