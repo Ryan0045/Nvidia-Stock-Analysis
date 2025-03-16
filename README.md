@@ -10,4 +10,4 @@ This project analyzes NVIDIA stock prices using **linear regression** and **time
 ## How to Use
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/nvidia-stock-analysis.git
+   git clone https://github.com/Ryan0045/nvidia-stock-analysis.git
