@@ -3,8 +3,9 @@
 This project analyzes NVIDIA stock prices using **linear regression** and **time series forecasting**. The goal is to understand the relationship between time and stock prices and to forecast future prices.
 
 ## Files
-- `nvidia_analysis.Rmd`: R Markdown file containing the analysis.
-- `nvidia_stock_data.csv`: Dataset used for the analysis.
+- `Nvidia_Analysis.Rmd`: R Markdown file containing the analysis.
+- - `Nvidia_Analysis.html`:html file containing the analysis.
+- `NVIDIA Corporation Common Stock.csv`: Dataset used for the analysis.
 - `images/`: Folder containing diagnostic plots and visualizations.
 
 ## How to Use
